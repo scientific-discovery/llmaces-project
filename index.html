@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Primary Meta Tags -->
+  <meta name="title" content="LLM-ACES: Closed-Loop Discovery of Dynamical Systems with LLM-Guided Adaptive Search">
+  <meta name="description" content="LLM-ACES couples LLM-induced operator priors with predictive-divergence trajectory acquisition to recover governing ODEs, reaching the highest symbolic accuracy on ODEBench and ODEBase.">
+  <meta name="keywords" content="Equation Discovery, Dynamical Systems, Symbolic Regression, Large Language Models, Active Learning, ODE Discovery, AI4Science">
+  <meta name="author" content="Nikhil Abhyankar*, Sha Li*, Sanchit Kabra*, Naren Ramakrishnan, Yulia Gel, Chandan K. Reddy">
+  <meta name="robots" content="index, follow">
+  <meta name="language" content="English">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Reddy AI Lab - Scientific Discovery">
+  <meta property="og:title" content="LLM-ACES: Closed-Loop Discovery of Dynamical Systems with LLM-Guided Adaptive Search">
+  <meta property="og:description" content="LLM-guided operator priors plus predictive-divergence data acquisition for recovering governing ODEs. NeurIPS 2026.">
+  <meta property="og:url" content="https://scientific-discovery.github.io/llm-aces-project">
+  <meta property="og:image" content="https://scientific-discovery.github.io/llm-aces-project/static/images/main_fig.png">
+  <meta property="og:image:alt" content="Overview of the LLM-ACES framework">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="LLM-ACES: Closed-Loop Discovery of Dynamical Systems with LLM-Guided Adaptive Search">
+  <meta name="twitter:description" content="LLM-guided operator priors plus predictive-divergence data acquisition for recovering governing ODEs. NeurIPS 2026.">
+  <meta name="twitter:image" content="https://scientific-discovery.github.io/llm-aces-project/static/images/main_fig.png">
+
+  <!-- Academic/Research Specific -->
+  <meta name="citation_title" content="LLM-ACES: Closed-Loop Discovery of Dynamical Systems with LLM-Guided Adaptive Search">
+  <meta name="citation_author" content="Abhyankar, Nikhil">
+  <meta name="citation_author" content="Li, Sha">
+  <meta name="citation_author" content="Kabra, Sanchit">
+  <meta name="citation_author" content="Ramakrishnan, Naren">
+  <meta name="citation_author" content="Gel, Yulia">
+  <meta name="citation_author" content="Reddy, Chandan K.">
+  <meta name="citation_publication_date" content="2026">
+  <meta name="citation_conference_title" content="Conference on Neural Information Processing Systems (NeurIPS)">
+  <meta name="citation_pdf_url" content="https://arxiv.org/pdf/2606.25039">
+
+  <!-- Additional SEO -->
+  <meta name="theme-color" content="#2563eb">
+  <meta name="msapplication-TileColor" content="#2563eb">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+  <!-- Preconnect for performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://ajax.googleapis.com">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+
+  <title>LLM-ACES: Closed-Loop Discovery of Dynamical Systems with LLM-Guided Adaptive Search | NeurIPS 2026</title>
+
+  <!-- Favicon and App Icons -->
+  <link rel="icon" type="image/x-icon" href="static/images/favicon.ico">
+  <link rel="apple-touch-icon" href="static/images/favicon.ico">
+
+  <!-- Critical CSS - Load synchronously -->
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+  <link rel="stylesheet" href="static/css/results.css">
+
+  <!-- Non-critical CSS - Load asynchronously -->
+  <link rel="preload" href="static/css/bulma-carousel.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="static/css/bulma-slider.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="static/css/fontawesome.all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+
+  <!-- Fallback for browsers that don't support preload -->
+  <noscript>
+    <link rel="stylesheet" href="static/css/bulma-carousel.min.css">
+    <link rel="stylesheet" href="static/css/bulma-slider.min.css">
+    <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  </noscript>
+
+  <!-- Fonts - Optimized loading -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Defer non-critical JavaScript -->
+  <script defer src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="static/js/fontawesome.all.min.js"></script>
+  <script defer src="static/js/bulma-carousel.min.js"></script>
+  <script defer src="static/js/bulma-slider.min.js"></script>
+  <script defer src="static/js/index.js"></script>
+  <script defer src="static/js/d3.v7.min.js"></script>
+  <script defer src="static/js/viz.js"></script>
+  <script defer src="static/js/aces-results.js"></script>
+
+  <!-- Structured Data for Academic Papers -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ScholarlyArticle",
+    "headline": "LLM-ACES: Closed-Loop Discovery of Dynamical Systems with LLM-Guided Adaptive Search",
+    "description": "A closed-loop framework that jointly optimizes symbolic hypothesis construction and adaptive data acquisition for recovering governing ordinary differential equations.",
+    "author": [
+      { "@type": "Person", "name": "Nikhil Abhyankar", "affiliation": { "@type": "Organization", "name": "Virginia Tech" } },
+      { "@type": "Person", "name": "Sha Li", "affiliation": { "@type": "Organization", "name": "Virginia Tech" } },
+      { "@type": "Person", "name": "Sanchit Kabra", "affiliation": { "@type": "Organization", "name": "Virginia Tech" } },
+      { "@type": "Person", "name": "Naren Ramakrishnan", "affiliation": { "@type": "Organization", "name": "Virginia Tech" } },
+      { "@type": "Person", "name": "Yulia Gel", "affiliation": { "@type": "Organization", "name": "Virginia Tech" } },
+      { "@type": "Person", "name": "Chandan K. Reddy", "affiliation": { "@type": "Organization", "name": "Virginia Tech" } }
+    ],
+    "datePublished": "2026",
+    "publisher": { "@type": "Organization", "name": "Conference on Neural Information Processing Systems (NeurIPS)" },
+    "url": "https://scientific-discovery.github.io/llm-aces-project",
+    "keywords": ["Equation Discovery", "Dynamical Systems", "Symbolic Regression", "Large Language Models", "Active Learning"],
+    "abstract": "Recovering governing Ordinary Differential Equations (ODEs) from data is a central challenge in modeling dynamical systems across scientific domains. Existing approaches cast discovery as a static inference problem over fixed datasets, assuming that the observed trajectories are sufficiently informative. However, dynamical systems evolve over large state spaces, and limited data can make multiple equations observationally indistinguishable, leading to identifiability gaps and the recovery of incorrect governing equations. To address this, we introduce LLM-ACES, or LLM-guided Active Closed-loop Equation Search, a closed-loop framework that jointly optimizes symbolic hypothesis construction and adaptive data acquisition. In LLM-ACES, a large language model (LLM) proposes operator priors that partition the large search space into distinct regions, within which candidate equations are fit to the observed data. The disagreement among these candidates guides the acquisition of informative trajectories, creating a feedback loop that iteratively refines both the hypothesis space and the discovered dynamics. On 122 ODE systems spanning ODEBench and ODEBase, LLM-ACES achieves the lowest median NMSE, outperforming state-of-the-art baselines by several orders of magnitude while achieving a high symbolic accuracy of 46.2% and 52.4%, respectively. Our analysis further shows that LLM-ACES is sample-efficient, achieving better performance with one-tenth the data. Furthermore, LLM-ACES's feedback-driven data acquisition makes it robust to noise and recovers the correct symbolic structure, while baselines introduce spurious terms that fit the data locally but obscure the true governing relationships.",
+    "citation": "@inproceedings{abhyankar2026llmaces, title={LLM-ACES: Closed-Loop Discovery of Dynamical Systems with LLM-Guided Adaptive Search}, author={Abhyankar, Nikhil and Li, Sha and Kabra, Sanchit and Ramakrishnan, Naren and Gel, Yulia and Reddy, Chandan K.}, booktitle={The Fortieth Annual Conference on Neural Information Processing Systems (NeurIPS)}, year={2026}}",
+    "isAccessibleForFree": true,
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "mainEntity": { "@type": "WebPage", "@id": "https://scientific-discovery.github.io/llm-aces-project" },
+    "about": [
+      { "@type": "Thing", "name": "Equation Discovery" },
+      { "@type": "Thing", "name": "Large Language Models" },
+      { "@type": "Thing", "name": "Active Learning" }
+    ]
+  }
+  </script>
+</head>
+<body>
+
+  <!-- Scroll to Top Button -->
+  <button class="scroll-to-top" onclick="scrollToTop()" title="Scroll to top" aria-label="Scroll to top">
+    <i class="fas fa-chevron-up"></i>
+  </button>
+
+  <main id="main-content">
+  <section class="hero">
+    <!-- Logos -->
+    <div class="header-logos">
+      <div class="header-logo-left">
+        <img src="static/images/vt.png" alt="Virginia Tech" style="height: 35px; width: auto;"/>
+      </div>
+      <!-- More Works Dropdown -->
+      <div class="more-works-container">
+        <button class="more-works-btn" onclick="toggleMoreWorks()" title="View More Works from Our Lab">
+          <i class="fas fa-flask"></i>
+          More Works
+          <i class="fas fa-chevron-down dropdown-arrow"></i>
+        </button>
+        <div class="more-works-dropdown" id="moreWorksDropdown">
+          <div class="dropdown-header">
+            <h4>More Works from Our Lab</h4>
+            <button class="close-btn" onclick="toggleMoreWorks()" aria-label="Close">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <div class="works-list">
+            <a href="https://scientific-discovery.github.io/main_page/" class="work-item" target="_blank">
+              <div class="work-info">
+                <h5>All Projects: Safe LLM Agents for Open-Ended Scientific Discovery</h5>
+                <p>One page for LLM-ACES, LLM-AutoSciLab, LLEMA and LLM-FE, and the research theme that connects them.</p>
+                <span class="work-venue">Overview of all projects</span>
+              </div>
+              <i class="fas fa-external-link-alt"></i>
+            </a>
+            <a href="https://scientific-discovery.github.io/llm-autoscilab-project/" class="work-item" target="_blank">
+              <div class="work-info">
+                <h5>LLM-AutoSciLab: Closed-Loop Scientific Discovery via Active Experimentation with LLMs</h5>
+                <p>Couples LLM hypothesis generation with hypothesis-conditioned experiment selection, and introduces the ActiveSciBench benchmark for active discovery.</p>
+                <span class="work-venue">NeurIPS 2026</span>
+              </div>
+              <i class="fas fa-external-link-alt"></i>
+            </a>
+            <a href="https://scientific-discovery.github.io/llema-project/" class="work-item" target="_blank">
+              <div class="work-info">
+                <h5>LLEMA: Evolutionary Search with LLMs for Multi-Objective Materials Discovery</h5>
+                <p>Couples the scientific knowledge in LLMs with chemistry-informed evolutionary rules and memory-based refinement for materials discovery.</p>
+                <span class="work-venue">ICLR 2026</span>
+              </div>
+              <i class="fas fa-external-link-alt"></i>
+            </a>
+            <a href="https://scientific-discovery.github.io/llm-fe/" class="work-item" target="_blank">
+              <div class="work-info">
+                <h5>LLM-FE: Automated Feature Engineering with Large Language Models</h5>
+                <p>A framework that casts feature engineering as evolutionary program search, with LLMs generating and refining executable feature transformations.</p>
+                <span class="work-venue">TMLR 2026</span>
+              </div>
+              <i class="fas fa-external-link-alt"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="has-text-centered">
+          <h1 class="title is-1 publication-title">LLM-ACES: Closed-Loop Discovery of Dynamical Systems with LLM-Guided Adaptive Search</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://nikhilsab.github.io/" target="_blank">Nikhil Abhyankar</a><small><sup class="smaller-superscript" style="font-size:0.6em">*</sup></small>,</span>
+            <span class="author-block">
+              <a href="https://csshali.github.io/" target="_blank">Sha Li</a><small><sup class="smaller-superscript" style="font-size:0.6em">*</sup></small>,</span>
+            <span class="author-block">
+              <a href="https://www.linkedin.com/in/sanchit-kabra-285456166/" target="_blank">Sanchit Kabra</a><small><sup class="smaller-superscript" style="font-size:0.6em">*</sup></small>,</span>
+            <span class="author-block">
+              <a href="https://people.cs.vt.edu/naren/" target="_blank">Naren Ramakrishnan</a>,</span>
+            <span class="author-block">
+              <a href="https://gel.stat.vt.edu/" target="_blank">Yulia Gel</a>,</span>
+            <span class="author-block">
+              <a href="https://creddy.net/" target="_blank">Chandan K. Reddy</a>
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+             <span class="author-block">Virginia Tech</span>
+             <br>
+             <div class="venue-badge">
+               <img src="static/images/neurips.png" alt="NeurIPS logo"/>
+               <strong>NeurIPS 2026</strong>
+             </div>
+             <span class="eql-cntrb"><small><br><sup>*</sup>Equal Contribution</small></span>
+          </div>
+
+          <div class="publication-links">
+            <span class="link-block">
+              <a href="https://arxiv.org/pdf/2606.25039" target="_blank"
+              class="external-link button is-normal is-rounded is-dark">
+                <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                <span>Paper</span>
+              </a>
+            </span>
+            <span class="link-block">
+              <a href="https://arxiv.org/abs/2606.25039" target="_blank"
+              class="external-link button is-normal is-rounded is-dark">
+                <span class="icon"><i class="ai ai-arxiv"></i></span>
+                <span>arXiv</span>
+              </a>
+            </span>
+            <span class="link-block">
+              <a href="https://github.com/scientific-discovery/LLM-ACES" target="_blank"
+              class="external-link button is-normal is-rounded is-dark">
+                <span class="icon"><i class="fab fa-github"></i></span>
+                <span>Code</span>
+              </a>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<!-- Results at a glance -->
+<section class="section" style="padding-top: 0.5rem;">
+  <div class="container">
+    <div class="stat-strip" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); max-width: 1040px;">
+      <div class="stat-tile">
+        <div class="stat-label">Symbolic accuracy on ODEBench</div>
+        <div class="stat-value"><span class="stat-accent">46.2%</span></div>
+        <div class="stat-context">Best of 12 methods on 63 systems; strongest baseline (Bayesian optimization) reaches 41.2%.</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">Symbolic accuracy on ODEBase</div>
+        <div class="stat-value"><span class="stat-accent">52.4%</span></div>
+        <div class="stat-context">59 biological systems with the Qwen3-32B backbone; Bayesian optimization reaches 49.3%.</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">Median reconstruction NMSE, ODEBench</div>
+        <div class="stat-value">1.33&times;10<sup style="font-size:0.5em">&minus;17</sup></div>
+        <div class="stat-context">vs 1.06&times;10<sup>&minus;14</sup> for the best baseline, with gaps growing under generalization and OOD.</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">Training data needed</div>
+        <div class="stat-value">10&times; less</div>
+        <div class="stat-context">In the 15-system efficiency study, LLM-ACES with 100 samples beats every baseline given up to 1,000.</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">LLM calls per system</div>
+        <div class="stat-value">30</div>
+        <div class="stat-context">10 iterations &times; up to 3 operator priors; the LLM baselines use 125 calls and 1,000 candidates.</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">ODE systems evaluated</div>
+        <div class="stat-value">122</div>
+        <div class="stat-context">ODEBench (physics-inspired, 1D&ndash;4D) and ODEBase (biological, 2D&ndash;3D), with anonymized variables for every LLM method.</div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End results at a glance -->
+
+<!-- Paper abstract -->
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>Recovering governing Ordinary Differential Equations (ODEs) from data is a central challenge in modeling dynamical systems across scientific domains. Existing approaches cast discovery as a static inference problem over fixed datasets, assuming that the observed trajectories are sufficiently informative. However, dynamical systems evolve over large state spaces, and limited data can make multiple equations observationally indistinguishable, leading to identifiability gaps and the recovery of incorrect governing equations. To address this, we introduce <strong>LLM-ACES</strong>, or <strong>LLM-guided Active Closed-loop Equation Search</strong>, a closed-loop framework that jointly optimizes symbolic hypothesis construction and adaptive data acquisition. In LLM-ACES, a large language model (LLM) proposes operator priors that partition the large search space into distinct regions, within which candidate equations are fit to the observed data. The disagreement among these candidates guides the acquisition of informative trajectories, creating a feedback loop that iteratively refines both the hypothesis space and the discovered dynamics. On 122 ODE systems spanning ODEBench and ODEBase, LLM-ACES achieves the lowest median NMSE, outperforming state-of-the-art baselines by several orders of magnitude while achieving a high symbolic accuracy of 46.2% and 52.4%, respectively. Our analysis further shows that LLM-ACES is sample-efficient, achieving better performance with one-tenth the data. Furthermore, LLM-ACES&rsquo;s feedback-driven data acquisition makes it robust to noise and recovers the correct symbolic structure, while baselines introduce spurious terms that fit the data locally but obscure the true governing relationships.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End paper abstract -->
+
+<!-- Identifiability gap -->
+<section class="section hero">
+  <div class="container is-max-desktop" style="max-width: 1100px;">
+    <div class="has-text-centered">
+      <h2 class="title is-3">Why Passive Data Is Not Enough</h2>
+      <p class="section-lead">When training trajectories cover only part of the state space, structurally different equations fit the data equally well. The paper illustrates this with <em>dx/dt = x + 0.1x&sup3;</em>: sampled at small <em>x</em>, the cubic term is invisible, so passive methods return a linear law with negligible training error. Hover the plot to see where the candidates part ways.</p>
+    </div>
+    <div class="viz-card">
+      <div class="columns is-variable is-5">
+        <div class="column is-7-desktop">
+          <h3 class="viz-card-title">The identifiability gap, from the paper&rsquo;s Appendix D.2</h3>
+          <p class="viz-card-sub">Right-hand side <em>f(x)</em> of the recovered equations, log&ndash;log axes. Inside the shaded region every candidate matches the data; outside it the passive fits miss the cubic growth.</p>
+          <div id="legend-ident"></div>
+          <div class="viz" id="chart-ident"></div>
+        </div>
+        <div class="column is-5-desktop">
+          <h3 class="viz-card-title">Recovered equations</h3>
+          <p class="viz-card-sub">Ground truth: <em>x + 0.1x&sup3;</em>. LLM-ODE&rsquo;s fit is negative on this range, so it is not drawn on the log axes.</p>
+          <div class="table-scroll">
+            <table class="data-table eq-table">
+              <thead><tr><th scope="col">Method</th><th scope="col">Reconstructed equation</th></tr></thead>
+              <tbody>
+                <tr><th scope="row" style="font-weight:500">SINDy / E-SINDy</th><td class="eq">1.0096<i>x</i></td></tr>
+                <tr><th scope="row" style="font-weight:500">PySR</th><td class="eq"><i>x</i></td></tr>
+                <tr><th scope="row" style="font-weight:500">Operon</th><td class="eq">1.023<i>x</i> + 0.0038</td></tr>
+                <tr><th scope="row" style="font-weight:500">ODEFormer</th><td class="eq">1.0053<i>x</i></td></tr>
+                <tr><th scope="row" style="font-weight:500">LLM-ODE</th><td class="eq">0.0001<i>x</i> &minus; 0.261</td></tr>
+                <tr class="is-ours"><th scope="row">LLM-ACES</th><td class="eq"><i>x</i> + 0.1<i>x</i><sup>3</sup></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="viz-foot" style="margin-top: 1rem;">&ldquo;No amount of optimization on the same trajectory can reveal structure that is absent from the data.&rdquo; LLM-ACES instead queries new initial conditions where its candidate equations disagree most, which is exactly where the cubic term shows itself.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End identifiability gap -->
+
+<!-- Method Overview -->
+<section class="section hero is-light">
+  <div class="container is-max-desktop" style="max-width: 1100px;">
+    <div class="has-text-centered">
+      <h2 class="title is-3">Method Overview</h2>
+      <p class="section-lead">LLM-ACES treats discovery as a closed loop in which the symbolic hypothesis space and the acquired dataset co-evolve. The LLM never writes the final equation; it shapes the space that symbolic regression searches, and the fitted candidates decide which experiment to run next.</p>
+    </div>
+    <figure class="paper-figure">
+      <button class="zoomable" type="button" aria-label="Enlarge the LLM-ACES overview figure">
+        <img width="2400" height="1246" src="static/images/main_fig.png" alt="LLM-ACES framework: (A) LLM-guided hypothesis construction, (B) hypothesis generation, (C) active experiment selection, (D) evaluation and feedback" loading="lazy">
+      </button>
+      <figcaption><strong>Overview of LLM-ACES.</strong> (A) The LLM induces constrained symbolic search spaces from task information and prior feedback. (B) Candidate equations are generated and optimized within these spaces. (C) New initial conditions are selected by maximizing predictive disagreement among candidate rollouts. (D) Acquired trajectories update the candidate equations and refine the next hypothesis space.</figcaption>
+    </figure>
+
+    <div class="method-steps">
+      <div class="method-step">
+        <span class="step-badge">A</span>
+        <h3>LLM-guided hypothesis construction</h3>
+        <p>Each round the LLM proposes <em>K</em> = 3 operator priors (sets of unary and binary operators): one exploits the best patterns in the experience buffer, the others explore operator families not yet tried.</p>
+      </div>
+      <div class="method-step">
+        <span class="step-badge">B</span>
+        <h3>Hypothesis generation</h3>
+        <p>PySR fits a candidate equation for every state dimension inside each constrained subspace. The accumulated population is a structured picture of what the dynamics could be.</p>
+      </div>
+      <div class="method-step">
+        <span class="step-badge">C</span>
+        <h3>Active experiment selection</h3>
+        <p>Every candidate is rolled out from a pool of initial conditions; the oracle is queried where the average pairwise NMSE between rollouts, the predictive divergence, is largest.</p>
+      </div>
+      <div class="method-step">
+        <span class="step-badge">D</span>
+        <h3>Evaluation and feedback</h3>
+        <p>New trajectories are split into train and validation data and all candidates are re-scored. The two best and two worst per dimension become demonstrations and failure cases in the next prompt.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End Method Overview -->
+
+<!-- Main results -->
+<section class="section hero" id="results">
+  <div class="container is-max-desktop" style="max-width: 1100px;">
+    <div class="has-text-centered">
+      <h2 class="title is-3">Main Results</h2>
+      <p class="section-lead">Twelve methods on ODEBench (63 physics-inspired systems) and ODEBase (59 biological systems), evaluated on the training trajectory, a held-out initial condition, and a 10&times; longer horizon. All LLM methods see anonymized variables.</p>
+    </div>
+
+    <div class="viz-controls">
+      <span class="viz-control-label">Benchmark</span>
+      <div id="ctl-bench"></div>
+    </div>
+
+    <div class="viz-card">
+      <h3 class="viz-card-title">Data fidelity: median NMSE per method</h3>
+      <p class="viz-card-sub">Each dot is a method&rsquo;s median NMSE across the benchmark&rsquo;s systems, on a log scale where further left is better. The bracket measures the gap between the best LLM-ACES variant and the best baseline.</p>
+      <div class="viz" id="chart-main"></div>
+      <details class="table-view">
+        <summary>Show the full results table</summary>
+        <div id="table-main"></div>
+      </details>
+    </div>
+
+    <div class="viz-card">
+      <h3 class="viz-card-title">Structural recovery: right equation, right size</h3>
+      <p class="viz-card-sub">Symbolic accuracy (share of equations whose structure matches the ground truth) against mean expression complexity. Methods that only fit the data drift away from the ground-truth complexity line or sit near zero accuracy. Hover a point to see the method.</p>
+      <div class="viz" id="chart-scatter"></div>
+    </div>
+  </div>
+</section>
+<!-- End main results -->
+
+<!-- Analysis -->
+<section class="section hero is-light">
+  <div class="container is-max-desktop" style="max-width: 1100px;">
+    <div class="has-text-centered">
+      <h2 class="title is-3">Analysis</h2>
+      <p class="section-lead">Which components matter, how much data LLM-ACES needs, and why the benchmarks are anonymized.</p>
+    </div>
+
+    <div class="viz-card">
+      <h3 class="viz-card-title">Ablation: every component contributes</h3>
+      <p class="viz-card-sub">NMSE distributions on 15 stratified ODEBench systems (5 each of 1D, 2D and 3D). Boxes span the interquartile range, the dark tick is the median, circles are outlying systems. Dropping the LLM priors hurts most; replacing predictive divergence with random initial conditions hurts generalization and OOD.</p>
+      <div class="viz" id="chart-ablation"></div>
+      <p class="viz-foot">Exactly recovered systems have zero error and are shown at the 10<sup>&minus;35</sup> floor used in the paper&rsquo;s figure.</p>
+      <details class="table-view">
+        <summary>Show data table</summary>
+        <div id="table-ablation"></div>
+      </details>
+    </div>
+
+    <div class="viz-grid-2">
+      <div class="viz-card">
+        <h3 class="viz-card-title">Sample efficiency</h3>
+        <p class="viz-card-sub">Reconstruction error as the observation budget grows. The blue rule marks what LLM-ACES reaches with 100 samples; no baseline gets below it even with 10&times; the data.</p>
+        <div id="legend-eff"></div>
+        <div class="viz" id="chart-eff"></div>
+        <details class="table-view">
+          <summary>Show data table</summary>
+          <div id="table-eff"></div>
+        </details>
+      </div>
+      <div class="viz-card">
+        <h3 class="viz-card-title">Memorization check</h3>
+        <p class="viz-card-sub">Qwen3-32B refining equations for 100 iterations. With the original variable names it reaches near-perfect fits on Feynman and ODEBench within a few iterations; once the variables are anonymized it stalls near 10<sup>&minus;4</sup> and exact recoveries collapse from 17 to 2.</p>
+        <div id="legend-mem"></div>
+        <div class="viz" id="chart-mem"></div>
+        <p class="viz-card-sub" style="margin: 1rem 0 0.4rem 0; font-weight: 600; color: var(--viz-ink-2);">Equations recovered exactly</p>
+        <div class="viz" id="chart-mem-exact"></div>
+        <details class="table-view">
+          <summary>Show data table</summary>
+          <div id="table-mem"></div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End analysis -->
+
+<!-- Qualitative Results -->
+<section class="section hero">
+  <div class="container is-max-desktop" style="max-width: 1100px;">
+    <div class="has-text-centered">
+      <h2 class="title is-3">Qualitative Results</h2>
+      <p class="section-lead">Final equations for the Schnackenberg and Maxwell&ndash;Bloch systems. Green marks components that match the ground truth; red marks spurious terms.</p>
+    </div>
+    <figure class="paper-figure">
+      <button class="zoomable" type="button" aria-label="Enlarge the qualitative comparison figure">
+        <img width="2400" height="1350" src="static/images/qualitative_analysis.png" alt="Equations discovered for the Schnackenberg and Maxwell-Bloch systems by PySR, SINDy, Operon, ODEFormer, LLM-ODE, APPS-ODE and LLM-ACES" loading="lazy">
+      </button>
+      <figcaption><strong>Discovered equations for the Schnackenberg (top) and Maxwell&ndash;Bloch (bottom) systems.</strong> Left: ground-truth governing equations and trajectories. Middle: equations recovered by symbolic and neural ODE discovery baselines. Right: equations recovered by LLM-guided and active-learning baselines. Green indicates correctly recovered symbolic components.</figcaption>
+    </figure>
+
+    <div class="key-features-container" style="margin-top: 2.5rem;">
+      <div class="key-feature-item">
+        <h3 class="key-feature-title">Passive regression oversimplifies</h3>
+        <p class="key-feature-description">PySR and SINDy return sparse or nearly linear expressions that drop the essential nonlinear interaction terms, even with low error on the observed trajectory.</p>
+      </div>
+      <div class="key-feature-item">
+        <h3 class="key-feature-title">Richer searches invent terms</h3>
+        <p class="key-feature-description">Operon and ODEFormer add spurious polynomial or oscillatory terms (ODEFormer even inserts a sine) that improve local interpolation while obscuring the mechanism.</p>
+      </div>
+      <div class="key-feature-item">
+        <h3 class="key-feature-title">Acquisition alone is not identifiability</h3>
+        <p class="key-feature-description">LLM-ODE recovers some components but misses coupled interactions, and APPS-ODE acquires data yet still returns oversimplified equations: the queried trajectories must separate competing hypotheses.</p>
+      </div>
+      <div class="key-feature-item">
+        <h3 class="key-feature-title">LLM-ACES recovers the mechanism</h3>
+        <p class="key-feature-description">Querying where candidate equations disagree, inside LLM-shaped operator spaces, yields compact and correct equations, including the reaction term of Schnackenberg and the bilinear couplings of Maxwell&ndash;Bloch.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End Qualitative Results -->
+
+<!-- Additional results -->
+<section class="section hero is-light">
+  <div class="container is-max-desktop" style="max-width: 1100px;">
+    <div class="has-text-centered">
+      <h2 class="title is-3">More from the Appendix</h2>
+      <p class="section-lead">Full distributions, robustness to noise and sparse sampling, the effect of how trajectories are chosen, and LLM-ACES rollouts for every benchmark system.</p>
+    </div>
+    <div class="gallery">
+      <div class="viz-controls"><div class="gallery-tabs"></div></div>
+
+      <div class="gallery-panel" id="g-dist" data-tab="Distributions">
+        <figure class="paper-figure">
+          <button class="zoomable" type="button" aria-label="Enlarge figure"><img width="2400" height="798" src="static/images/dist_odebench.png" alt="Box plots of reconstruction, generalization and OOD NMSE and expression complexity for all methods on ODEBench" loading="lazy"></button>
+          <figcaption><strong>ODEBench.</strong> Reconstruction, generalization and out-of-distribution NMSE, and expression complexity, across all 63 systems.</figcaption>
+        </figure>
+        <figure class="paper-figure" style="margin-top: 2rem;">
+          <button class="zoomable" type="button" aria-label="Enlarge figure"><img width="2400" height="797" src="static/images/dist_odebase.png" alt="Box plots of reconstruction, generalization and OOD NMSE and expression complexity for all methods on ODEBase" loading="lazy"></button>
+          <figcaption><strong>ODEBase.</strong> The same view for the 59 biological systems. On both benchmarks LLM-ACES&rsquo;s quartiles sit well below every baseline, so the gains are broad rather than driven by a few systems; Bayesian optimization is the strongest competitor, with wider ranges shifted toward higher error under distribution shift.</figcaption>
+        </figure>
+      </div>
+      <div class="gallery-panel" id="g-noise" data-tab="Noise robustness">
+        <figure class="paper-figure">
+          <button class="zoomable" type="button" aria-label="Enlarge figure"><img width="2400" height="870" src="static/images/noise_robustness.png" alt="Reconstruction NMSE, complexity and symbolic accuracy of LLM-ACES, ODEFormer, Operon, PySR and SINDy at several noise levels and subsampling ratios" loading="lazy"></button>
+          <figcaption><strong>Robustness under noisy observations.</strong> Clean data and SNR of 40, 30, 20 and 10 dB, with no subsampling (&rho; = 0.0) and half the points dropped (&rho; = 0.5), following the MDBench and ODEBench protocols. LLM-ACES keeps the strongest reconstruction accuracy without an explosion in expression complexity.</figcaption>
+        </figure>
+      </div>
+      <div class="gallery-panel" id="g-multi" data-tab="Trajectory diversity">
+        <figure class="paper-figure" style="max-width: 760px; margin: 0 auto;">
+          <button class="zoomable" type="button" aria-label="Enlarge figure"><img width="1200" height="839" src="static/images/trajectory_diversity.png" alt="Generalization and OOD NMSE of E-SINDy, Operon, PySR and SINDy with single versus multiple initial conditions" loading="lazy"></button>
+          <figcaption><strong>Single versus multiple trajectories.</strong> At a fixed budget of 100 samples, data from 10 random initial conditions beats one densely sampled trajectory for every method, but random coverage does not target the regions that separate candidate equations.</figcaption>
+        </figure>
+      </div>
+      <div class="gallery-panel" id="g-acq" data-tab="Acquisition strategies">
+        <figure class="paper-figure" style="max-width: 900px; margin: 0 auto;">
+          <button class="zoomable" type="button" aria-label="Enlarge figure"><img width="1800" height="895" src="static/images/acquisition_strategies.png" alt="Generalization and OOD NMSE for single, multiple, Bayesian optimization, query-by-committee and predictive-divergence trajectory selection on 1D, 2D and 3D ODEBench systems" loading="lazy"></button>
+          <figcaption><strong>How trajectories are chosen matters more than how many.</strong> On 1D, 2D and 3D ODEBench systems, selecting initial conditions by predictive divergence consistently reaches the lowest NMSE, ahead of Bayesian optimization and query-by-committee.</figcaption>
+        </figure>
+      </div>
+      <div class="gallery-panel" id="g-traj" data-tab="Rollouts">
+        <div class="columns">
+          <div class="column is-half">
+            <figure class="paper-figure">
+              <button class="zoomable" type="button" aria-label="Enlarge figure"><img width="1600" height="2290" src="static/images/trajectories_odebench.png" alt="Grid of LLM-ACES predicted trajectories overlaid on ground truth for every ODEBench system" loading="lazy"></button>
+              <figcaption><strong>ODEBench.</strong> LLM-ACES trajectories overlaid on the ground truth for every system, first set of initial conditions.</figcaption>
+            </figure>
+          </div>
+          <div class="column is-half">
+            <figure class="paper-figure">
+              <button class="zoomable" type="button" aria-label="Enlarge figure"><img width="1600" height="2293" src="static/images/trajectories_odebase.png" alt="Grid of LLM-ACES predicted trajectories overlaid on ground truth for every ODEBase system" loading="lazy"></button>
+              <figcaption><strong>ODEBase.</strong> The same comparison for every ODEBase system.</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End additional results -->
+
+<!--BibTex citation -->
+  <section class="section" id="BibTeX">
+    <div class="container is-max-desktop content">
+      <div class="bibtex-header">
+        <h2 class="title">BibTeX</h2>
+        <button class="copy-bibtex-btn" onclick="copyBibTeX()" title="Copy BibTeX to clipboard">
+          <i class="fas fa-copy"></i>
+          <span class="copy-text">Copy</span>
+        </button>
+      </div>
+      <pre id="bibtex-code"><code>@inproceedings{abhyankar2026llmaces,
+  title={{LLM-ACES}: Closed-Loop Discovery of Dynamical Systems with {LLM}-Guided Adaptive Search},
+  author={Abhyankar, Nikhil and Li, Sha and Kabra, Sanchit and Ramakrishnan, Naren and Gel, Yulia and Reddy, Chandan K.},
+  booktitle={The Fortieth Annual Conference on Neural Information Processing Systems (NeurIPS)},
+  year={2026},
+  url={https://arxiv.org/abs/2606.25039}
+}</code></pre>
+    </div>
+  </section>
+<!--End BibTex citation -->
+  </main>
+
+  <footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            This page was built using the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">Academic Project Page Template</a> which was adopted from the <a href="https://nerfies.github.io" target="_blank">Nerfies</a> project page.
+            You are free to borrow the source code of this website, we just ask that you link back to this page in the footer. <br> This website is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative
+            Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

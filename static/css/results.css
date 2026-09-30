@@ -1,0 +1,788 @@
+/* ==========================================================================
+   Results & visualization components
+   Extends index.css (same template as the LLEMA project page).
+   ========================================================================== */
+
+:root {
+  /* Chart roles. "Ours" is categorical slot 1 on every chart of the page. */
+  --ours: #2a78d6;
+  --ours-dark: #1c5cab;
+  --ours-wash: rgba(42, 120, 214, 0.10);
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+  --series-4: #eda100;
+  --base-mark: #8190a5;          /* de-emphasized baseline dots (3.25:1 on white) */
+  --base-bar: #b4bdca;           /* de-emphasized baseline bars (labelled at the tip) */
+  --viz-grid: #edf0f4;
+  --viz-axis: #c5ccd6;
+  --viz-ink-1: #1e293b;
+  --viz-ink-2: #475569;
+  --viz-ink-3: #64748b;
+  --viz-surface: #ffffff;
+}
+
+/* ---------- Section helpers ---------- */
+.section-lead {
+  max-width: 820px;
+  margin: -0.5rem auto 2rem auto;
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.subsection-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 3rem 0 0.4rem 0;
+  text-align: left;
+}
+
+.subsection-lead {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1.65;
+  margin-bottom: 1.25rem;
+  text-align: left;
+  max-width: 900px;
+}
+
+.venue-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.75rem;
+}
+
+.venue-badge img {
+  height: 44px;
+  width: auto;
+}
+
+.venue-badge strong {
+  font-size: 1.2em;
+  color: var(--text-primary);
+}
+
+/* ---------- Stat tiles (results at a glance) ---------- */
+.stat-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 1rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.stat-tile {
+  background: var(--background-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 1.1rem 1.25rem 1rem 1.25rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--viz-ink-2);
+  line-height: 1.35;
+}
+
+.stat-value {
+  font-size: 2.1rem;
+  font-weight: 700;
+  color: var(--viz-ink-1);
+  line-height: 1.15;
+  margin: 0.35rem 0 0.3rem 0;
+  letter-spacing: -0.01em;
+}
+
+.stat-value .stat-accent {
+  color: var(--ours);
+}
+
+.stat-context {
+  font-size: 0.82rem;
+  color: var(--viz-ink-3);
+  line-height: 1.45;
+}
+
+/* ---------- Controls (one row, above the charts they scope) ---------- */
+.viz-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  margin: 0 0 1rem 0;
+  text-align: left;
+}
+
+.viz-control-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--viz-ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-right: 0.4rem;
+}
+
+.seg {
+  display: inline-flex;
+  flex-wrap: wrap;
+  background: var(--background-accent);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.seg button {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--viz-ink-2);
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+  padding: 0.38rem 0.8rem;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+  line-height: 1.3;
+}
+
+.seg button:hover {
+  color: var(--viz-ink-1);
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.seg button[aria-pressed="true"] {
+  background: var(--background-primary);
+  color: var(--viz-ink-1);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.08), 0 0 0 1px rgb(0 0 0 / 0.04);
+}
+
+.seg button:focus-visible {
+  outline: 2px solid var(--ours);
+  outline-offset: 1px;
+}
+
+/* ---------- Chart cards ---------- */
+.viz-card {
+  background: var(--viz-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: 1.5rem 1.5rem 1.1rem 1.5rem;
+  box-shadow: var(--shadow-md);
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.viz-card-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.08rem;
+  font-weight: 700;
+  color: var(--viz-ink-1);
+  margin: 0 0 0.25rem 0;
+}
+
+.viz-card-sub {
+  font-size: 0.92rem;
+  color: var(--viz-ink-3);
+  line-height: 1.55;
+  margin: 0 0 1rem 0;
+}
+
+.viz-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+.viz-grid-2 > .viz-card {
+  margin-bottom: 0;
+}
+
+@media screen and (max-width: 900px) {
+  .viz-grid-2 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.viz-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.75rem;
+}
+
+@media screen and (max-width: 1000px) {
+  .viz-grid-3 {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.25rem;
+  }
+}
+
+.viz {
+  position: relative;
+  width: 100%;
+  min-height: 60px;
+}
+
+.viz svg {
+  display: block;
+  overflow: visible;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+.viz .tick text,
+.viz .axis-text {
+  font-size: 11.5px;
+  fill: var(--viz-ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.viz .axis-title {
+  font-size: 12px;
+  font-weight: 500;
+  fill: var(--viz-ink-3);
+}
+
+.viz .panel-title {
+  font-size: 13px;
+  font-weight: 700;
+  fill: var(--viz-ink-1);
+}
+
+.viz .panel-sub {
+  font-size: 11.5px;
+  fill: var(--viz-ink-3);
+}
+
+.viz .row-label {
+  font-size: 12.5px;
+  fill: var(--viz-ink-2);
+}
+
+.viz .row-label.is-hl {
+  font-weight: 700;
+  fill: var(--viz-ink-1);
+}
+
+.viz .group-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  fill: var(--viz-ink-3);
+}
+
+.viz .value-label {
+  font-size: 11.5px;
+  fill: var(--viz-ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.viz .value-label.is-hl {
+  font-weight: 700;
+  fill: var(--viz-ink-1);
+}
+
+.viz .annot {
+  font-size: 11.5px;
+  font-weight: 600;
+  fill: var(--viz-ink-1);
+}
+
+.viz .annot-muted {
+  font-size: 11px;
+  fill: var(--viz-ink-3);
+}
+
+.viz .gridline {
+  stroke: var(--viz-grid);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+
+.viz .axisline {
+  stroke: var(--viz-axis);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+
+.viz .row-band {
+  fill: transparent;
+}
+
+.viz .row-band.is-hover {
+  fill: rgba(15, 23, 42, 0.035);
+}
+
+.viz .hit {
+  fill: transparent;
+  cursor: default;
+}
+
+.viz .hit:focus {
+  outline: none;
+}
+
+.viz .hit:focus-visible {
+  stroke: var(--ours);
+  stroke-width: 1.5;
+}
+
+.viz .crosshair {
+  stroke: var(--viz-ink-3);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+  pointer-events: none;
+}
+
+/* Legend (always present for >= 2 series) */
+.viz-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.1rem;
+  margin: 0 0 0.75rem 0;
+  font-size: 0.85rem;
+  color: var(--viz-ink-2);
+}
+
+.viz-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.viz-legend .key-line {
+  width: 16px;
+  height: 0;
+  border-top: 2px solid currentColor;
+  border-radius: 2px;
+}
+
+.viz-legend .key-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.viz-legend .key-rect {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+.viz-foot {
+  font-size: 0.8rem;
+  color: var(--viz-ink-3);
+  line-height: 1.5;
+  margin-top: 0.6rem;
+}
+
+/* ---------- Tooltip ---------- */
+.viz-tip {
+  position: fixed;
+  z-index: 2000;
+  pointer-events: none;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 10px;
+  box-shadow: 0 10px 24px -6px rgb(15 23 42 / 0.18), 0 2px 6px rgb(15 23 42 / 0.06);
+  padding: 0.55rem 0.7rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  color: var(--viz-ink-2);
+  min-width: 150px;
+  max-width: 300px;
+  opacity: 0;
+  transform: translateY(2px);
+  transition: opacity 0.12s ease, transform 0.12s ease;
+}
+
+.viz-tip.is-on {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.viz-tip-title {
+  font-weight: 700;
+  color: var(--viz-ink-1);
+  margin-bottom: 0.3rem;
+  font-size: 0.82rem;
+}
+
+.viz-tip-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  line-height: 1.55;
+  white-space: nowrap;
+}
+
+.viz-tip-key {
+  flex: 0 0 auto;
+  width: 12px;
+  height: 0;
+  border-top: 2px solid currentColor;
+  border-radius: 2px;
+}
+
+.viz-tip-val sup,
+table.data-table sup {
+  font-size: 0.72em;
+  line-height: 0;
+  vertical-align: 0.55em;
+}
+
+.viz-tip-val {
+  font-weight: 700;
+  color: var(--viz-ink-1);
+  font-variant-numeric: tabular-nums;
+}
+
+.viz-tip-lab {
+  color: var(--viz-ink-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.viz-tip-row.is-current .viz-tip-lab {
+  color: var(--viz-ink-1);
+  font-weight: 600;
+}
+
+.viz-tip-note {
+  margin-top: 0.35rem;
+  padding-top: 0.35rem;
+  border-top: 1px solid var(--border-color);
+  color: var(--viz-ink-3);
+  font-size: 0.76rem;
+  white-space: normal;
+}
+
+/* ---------- Data tables (table view twin of every chart) ---------- */
+.table-view {
+  margin-top: 0.75rem;
+}
+
+.table-view > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--viz-ink-2);
+  list-style: none;
+  padding: 0.3rem 0.1rem;
+  user-select: none;
+}
+
+.table-view > summary::-webkit-details-marker {
+  display: none;
+}
+
+.table-view > summary::before {
+  content: '';
+  width: 0;
+  height: 0;
+  border-left: 5px solid currentColor;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  transition: transform 0.15s ease;
+}
+
+.table-view[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+.table-view > summary:hover {
+  color: var(--viz-ink-1);
+}
+
+.table-scroll {
+  overflow-x: auto;
+  margin-top: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+}
+
+table.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+  color: var(--viz-ink-2);
+  background: #fff;
+}
+
+table.data-table caption {
+  caption-side: bottom;
+  text-align: left;
+  font-size: 0.78rem;
+  color: var(--viz-ink-3);
+  padding: 0.5rem 0.75rem;
+}
+
+table.data-table th,
+table.data-table td {
+  padding: 0.45rem 0.7rem;
+  border-bottom: 1px solid var(--viz-grid);
+  white-space: nowrap;
+}
+
+table.data-table thead th {
+  font-weight: 700;
+  color: var(--viz-ink-1);
+  background: var(--background-secondary);
+  font-size: 0.8rem;
+  vertical-align: bottom;
+}
+
+table.data-table thead tr.col-groups th {
+  text-align: center;
+  border-bottom: 1px solid var(--border-color);
+}
+
+table.data-table td.num,
+table.data-table th.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+table.data-table tr.group-row td {
+  background: #fbfcfd;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--viz-ink-3);
+}
+
+table.data-table tr.is-ours th,
+table.data-table tr.is-ours td {
+  background: var(--ours-wash);
+  color: var(--viz-ink-1);
+}
+
+table.data-table tr.is-ours th:first-child,
+table.data-table tr.is-ours td:first-child {
+  font-weight: 700;
+}
+
+table.data-table td.is-best {
+  font-weight: 700;
+  color: var(--viz-ink-1);
+}
+
+table.data-table td.is-second {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+table.data-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* ---------- Method steps ---------- */
+.method-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+  text-align: left;
+}
+
+.method-step {
+  background: var(--background-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 1.2rem 1.25rem;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.method-step:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.method-step .step-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: #232F3E;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 0.7rem;
+}
+
+.method-step h3 {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: #232F3E;
+  margin: 0 0 0.45rem 0;
+  line-height: 1.35;
+}
+
+.method-step p {
+  font-size: 0.93rem;
+  line-height: 1.6;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* ---------- Figures with zoom ---------- */
+.paper-figure {
+  margin: 0;
+  text-align: center;
+}
+
+.paper-figure .zoomable {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: #fff;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  cursor: zoom-in;
+  position: relative;
+}
+
+.paper-figure .zoomable img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.paper-figure .zoomable::after {
+  content: '\2922';
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.62);
+  color: #fff;
+  font-size: 15px;
+  line-height: 30px;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.paper-figure .zoomable:hover::after,
+.paper-figure .zoomable:focus-visible::after {
+  opacity: 1;
+}
+
+.paper-figure .zoomable:focus-visible {
+  outline: 2px solid var(--ours);
+  outline-offset: 3px;
+}
+
+.paper-figure figcaption {
+  margin-top: 1rem;
+  font-style: italic;
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+  text-align: justify;
+  line-height: 1.55;
+}
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  background: rgba(15, 23, 42, 0.86);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  cursor: zoom-out;
+}
+
+.lightbox.is-open {
+  display: flex;
+}
+
+.lightbox img {
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.5);
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+/* ---------- Tabbed figure gallery ---------- */
+.gallery-panel {
+  display: none;
+}
+
+.gallery-panel.is-active {
+  display: block;
+}
+
+.gallery-panel .paper-figure figcaption {
+  text-align: left;
+}
+
+.eq-table {
+  font-size: 0.9rem;
+}
+
+.eq-table td.eq {
+  font-family: 'Cambria Math', 'STIX Two Math', 'Latin Modern Math', Georgia, serif;
+  font-size: 0.98rem;
+  color: var(--viz-ink-1);
+}
+
+@media screen and (max-width: 768px) {
+  .viz-card {
+    padding: 1.1rem 0.9rem 0.9rem 0.9rem;
+  }
+
+  .stat-value {
+    font-size: 1.8rem;
+  }
+
+  .subsection-title {
+    font-size: 1.2rem;
+  }
+
+  .seg button {
+    font-size: 0.82rem;
+    padding: 0.34rem 0.6rem;
+  }
+}
+
+@media print {
+  .table-view:not([open]) > .table-scroll {
+    display: block;
+  }
+}
