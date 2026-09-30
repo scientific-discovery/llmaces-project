@@ -152,8 +152,8 @@
           <div class="works-list">
             <a href="https://scientific-discovery.github.io/main_page/" class="work-item" target="_blank">
               <div class="work-info">
-                <h5>All Projects: Safe LLM Agents for Open-Ended Scientific Discovery</h5>
-                <p>One page for LLM-ACES, LLM-AutoSciLab, LLEMA and LLM-FE, and the research theme that connects them.</p>
+                <h5>Homepage</h5>
+                <!-- <p>One page for LLM-ACES, LLM-AutoSciLab, LLEMA and LLM-FE, and the research theme that connects them.</p> -->
                 <span class="work-venue">Overview of all projects</span>
               </div>
               <i class="fas fa-external-link-alt"></i>
@@ -242,45 +242,6 @@
       </div>
     </div>
   </section>
-
-<!-- Results at a glance -->
-<section class="section" style="padding-top: 0.5rem;">
-  <div class="container">
-    <div class="stat-strip" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); max-width: 1040px;">
-      <div class="stat-tile">
-        <div class="stat-label">Symbolic accuracy on ODEBench</div>
-        <div class="stat-value"><span class="stat-accent">46.2%</span></div>
-        <div class="stat-context">Best of 12 methods on 63 systems; strongest baseline (Bayesian optimization) reaches 41.2%.</div>
-      </div>
-      <div class="stat-tile">
-        <div class="stat-label">Symbolic accuracy on ODEBase</div>
-        <div class="stat-value"><span class="stat-accent">52.4%</span></div>
-        <div class="stat-context">59 biological systems with the Qwen3-32B backbone; Bayesian optimization reaches 49.3%.</div>
-      </div>
-      <div class="stat-tile">
-        <div class="stat-label">Median reconstruction NMSE, ODEBench</div>
-        <div class="stat-value">1.33&times;10<sup style="font-size:0.5em">&minus;17</sup></div>
-        <div class="stat-context">vs 1.06&times;10<sup>&minus;14</sup> for the best baseline, with gaps growing under generalization and OOD.</div>
-      </div>
-      <div class="stat-tile">
-        <div class="stat-label">Training data needed</div>
-        <div class="stat-value">10&times; less</div>
-        <div class="stat-context">In the 15-system efficiency study, LLM-ACES with 100 samples beats every baseline given up to 1,000.</div>
-      </div>
-      <div class="stat-tile">
-        <div class="stat-label">LLM calls per system</div>
-        <div class="stat-value">30</div>
-        <div class="stat-context">10 iterations &times; up to 3 operator priors; the LLM baselines use 125 calls and 1,000 candidates.</div>
-      </div>
-      <div class="stat-tile">
-        <div class="stat-label">ODE systems evaluated</div>
-        <div class="stat-value">122</div>
-        <div class="stat-context">ODEBench (physics-inspired, 1D&ndash;4D) and ODEBase (biological, 2D&ndash;3D), with anonymized variables for every LLM method.</div>
-      </div>
-    </div>
-  </div>
-</section>
-<!-- End results at a glance -->
 
 <!-- Paper abstract -->
 <section class="section hero is-light">
@@ -375,6 +336,45 @@
   </div>
 </section>
 <!-- End Method Overview -->
+
+<!-- Results at a glance -->
+<section class="section" style="padding-top: 0.5rem;">
+  <div class="container">
+    <div class="stat-strip" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); max-width: 1040px;">
+      <div class="stat-tile">
+        <div class="stat-label">Symbolic accuracy on ODEBench</div>
+        <div class="stat-value"><span class="stat-accent">46.2%</span></div>
+        <div class="stat-context">Best of 12 methods on 63 systems; strongest baseline (Bayesian optimization) reaches 41.2%.</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">Symbolic accuracy on ODEBase</div>
+        <div class="stat-value"><span class="stat-accent">52.4%</span></div>
+        <div class="stat-context">59 biological systems with the Qwen3-32B backbone; Bayesian optimization reaches 49.3%.</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">Median reconstruction NMSE, ODEBench</div>
+        <div class="stat-value">1.33&times;10<sup style="font-size:0.5em">&minus;17</sup></div>
+        <div class="stat-context">vs 1.06&times;10<sup>&minus;14</sup> for the best baseline, with gaps growing under generalization and OOD.</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">Training data needed</div>
+        <div class="stat-value">10&times; less</div>
+        <div class="stat-context">In the 15-system efficiency study, LLM-ACES with 100 samples beats every baseline given up to 1,000.</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">LLM calls per system</div>
+        <div class="stat-value">30</div>
+        <div class="stat-context">10 iterations &times; up to 3 operator priors; the LLM baselines use 125 calls and 1,000 candidates.</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">ODE systems evaluated</div>
+        <div class="stat-value">122</div>
+        <div class="stat-context">ODEBench (physics-inspired, 1D&ndash;4D) and ODEBase (biological, 2D&ndash;3D), with anonymized variables for every LLM method.</div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End results at a glance -->
 
 <!-- Main results -->
 <section class="section hero" id="results">
